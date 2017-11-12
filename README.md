@@ -19,11 +19,20 @@ The repository branches are configured as follows:
 
 * **gh-pages**: this is where the demo is hosted. GitHub pages is configured to get the demo from there. To update the demo, merge stable code from master into gh-pages branch.
 
+### Getting Started
+
+#### Requirements:
+- NodeJS >= 6 and NPM
+
+To get started, once you clone this repository, run `npm install`.
+
 ### Coding style
 
 As all modern browsers nowadays support [ES6](https://github.com/lukehoban/es6features), we will be using its features such as Classes, Arrow functions and Promises.
 
-We will be using [Airbnb coding style](https://github.com/airbnb/javascript) for Javascript. **TODO:** Travis CI automated checking.
+We use [Airbnb coding style](https://github.com/airbnb/javascript) for Javascript. There is a [Travis CI](http://travis-ci.org/) bot checking code style, so if your code does not pass style checking, you will have to fix it.
+
+To do so, or even before comitting, run `npm run lint` and check the output for the points where you need to change. This will ensure your code will pass Travis CI testing.
 
 ### Wiki
 
