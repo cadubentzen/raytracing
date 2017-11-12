@@ -2,7 +2,7 @@
 
 This is the final project of the Computer Graphics discipline at UFRN.
 
-It consists of a Ray Tracing implementation in WebGL. [Click here to see your demo](https://cadubentzen.github.io/raytracing).
+It consists of a Ray Tracing implementation in WebGL. [Click here to see our demo](https://cadubentzen.github.io/raytracing).
 
 ### Repository Structure
 
