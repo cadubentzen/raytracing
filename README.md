@@ -4,7 +4,7 @@ This is the final project of the Computer Graphics discipline at UFRN.
 
 It consists of a Ray Tracing implementation in WebGL. [Click here to see our demo](https://cadubentzen.github.io/raytracing).
 
-Browser requirements:
+#### Browser requirements:
 - Chrome >= 50
 - Edge >= 13
 - Firefox >= 45
