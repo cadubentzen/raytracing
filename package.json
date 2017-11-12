@@ -1,0 +1,19 @@
+{
+  "name": "raytracing",
+  "version": "1.0.0",
+  "description": "Ray Tracing in WebGL",
+  "main": "index.js",
+  "scripts": {
+      "lint": "./node_modules/.bin/eslint **/*.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cadubentzen/raytracing.git"
+  },
+  "author": "Cadu Bentzen, Mateus Targino, Lucas Ramon",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/cadubentzen/raytracing/issues"
+  },
+  "homepage": "https://github.com/cadubentzen/raytracing#readme"
+}
