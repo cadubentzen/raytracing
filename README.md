@@ -23,7 +23,11 @@ The repository branches are configured as follows:
 
 ### Getting Started
 
-#### Requirements:
+#### Opening page locally:
+
+Simply clone this repo and open `index.html` in your browser.
+
+#### Requirements for developing:
 - NodeJS >= 6 and NPM
 
 To get started, once you clone this repository, run `npm install`.
