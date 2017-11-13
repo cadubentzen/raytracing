@@ -34,7 +34,11 @@ To get started, once you clone this repository, run `npm install`.
 
 ### Coding style
 
-As all modern browsers nowadays support [ES6](https://github.com/lukehoban/es6features), we will be using its features such as Classes, Arrow functions and Promises.
+As all modern browsers nowadays support [ES6](https://github.com/lukehoban/es6features), we will be using its features such as:
+- [Classes](https://github.com/lukehoban/es6features#classes)
+- [Arrow functions](https://github.com/lukehoban/es6features#arrows)
+- [Promises](https://github.com/lukehoban/es6features#promises)
+- [Template strings](https://github.com/lukehoban/es6features#template-strings)
 
 We use [Airbnb coding style](https://github.com/airbnb/javascript) for Javascript. There is a [Travis CI](http://travis-ci.org/) bot checking code style, so if your code does not pass style checking, you will have to fix it.
 
