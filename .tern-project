@@ -1,5 +1,8 @@
 {
   "libs": [
     "browser"
+  ],
+  "loadEagerly": [
+    "gl-matrix.js"
   ]
 }
