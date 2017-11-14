@@ -109,9 +109,12 @@ function initDemo() {
   const pyramidVertices = [
     //     X,       Y,           Z,         R,   G,   B
     //
-    // First face (base) - red
+    // First face triangle 1 (base) - red
     /* */0.5, /**/0.0, /*   */-0.5, /*  */1.0, 0.0, 0.0,
     /* */0.5, /**/0.0, /*    */0.5, /*  */1.0, 0.0, 0.0,
+    /**/-0.5, /**/0.0, /*    */0.5, /*  */1.0, 0.0, 0.0,
+    // First face triangle 2 (base) - red
+    /* */0.5, /**/0.0, /*   */-0.5, /*  */1.0, 0.0, 0.0,
     /**/-0.5, /**/0.0, /*    */0.5, /*  */1.0, 0.0, 0.0,
     /**/-0.5, /**/0.0, /*   */-0.5, /*  */1.0, 0.0, 0.0,
     //
@@ -136,28 +139,10 @@ function initDemo() {
     /**/-0.5, /*    */0.0, /**/-0.5, /* */0.0, 1.0, 1.0,
   ];
 
-  const pyramidIndices = [
-    // First face - base
-    0, 1, 2,
-    0, 2, 3,
-    // Second face
-    4, 5, 6,
-    // Third face
-    7, 8, 9,
-    // Fourth face
-    10, 11, 12,
-    // Fifth face
-    13, 14, 15,
-  ];
-
   // Upload vertices from RAM to graphics memory
   const pyramidVertexBufferObject = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, pyramidVertexBufferObject);
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(pyramidVertices), gl.STATIC_DRAW);
-
-  const pyramidIndexBufferObject = gl.createBuffer();
-  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, pyramidIndexBufferObject);
-  gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(pyramidIndices), gl.STATIC_DRAW);
 
   // Vertices positions
   const positionAttribLocation = gl.getAttribLocation(program, 'vertPosition');
@@ -218,7 +203,7 @@ function initDemo() {
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
     // Draw again
-    gl.drawElements(gl.TRIANGLES, pyramidIndices.length, gl.UNSIGNED_SHORT, 0);
+    gl.drawArrays(gl.TRIANGLES, 0, 18);
 
     requestAnimationFrame(loop);
   }
