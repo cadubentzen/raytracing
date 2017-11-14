@@ -1,40 +1,6 @@
-/* global mat4 glMatrix */
+/* global mat4 glMatrix vertexShaderCode fragmentShaderCode */
 
-// The Vertex Shader is a program in OpenGL Shading Language (GLSL)
-// It basically is a function that runs on every vertex
-const vertexShaderCode = `
-precision mediump float;
-
-attribute vec3 vertPosition;
-attribute vec3 vertColor;
-
-varying vec3 fragColor;
-
-uniform mat4 mWorld;
-uniform mat4 mView;
-uniform mat4 mProj;
-
-void main()
-{
-  fragColor = vertColor;
-  gl_Position = mProj * mView * mWorld * vec4(vertPosition, 1.0);
-}
-`;
-
-// The Fragment Shader is a program in GLSL. It is responsible
-// for the color, basically. (Need to learn more)
-const fragmentShaderCode = `
-precision mediump float;
-
-varying vec3 fragColor;
-
-void main()
-{
-  gl_FragColor = vec4(fragColor, 1.0);
-}
-`;
-
-// Function that is called in on load.
+// Function that is called on load.
 function initDemo() {
   const canvas = document.getElementById('c');
 
@@ -107,33 +73,34 @@ function initDemo() {
 
   // Create buffer
   const pyramidVertices = [
-    //     X,       Y,           Z,         R,   G,   B
+    //     X,           Y,        Z,        R,   G,   B
     //
-    // First face triangle 1 (base) - red
-    /* */0.5, /**/0.0, /*   */-0.5, /*  */1.0, 0.0, 0.0,
-    /* */0.5, /**/0.0, /*    */0.5, /*  */1.0, 0.0, 0.0,
-    /**/-0.5, /**/0.0, /*    */0.5, /*  */1.0, 0.0, 0.0,
-    // First face triangle 2 (base) - red
-    /* */0.5, /**/0.0, /*   */-0.5, /*  */1.0, 0.0, 0.0,
-    /**/-0.5, /**/0.0, /*    */0.5, /*  */1.0, 0.0, 0.0,
-    /**/-0.5, /**/0.0, /*   */-0.5, /*  */1.0, 0.0, 0.0,
+    // First base triangle 1 - red
+    /* */0.5, /*    */0.0, /**/-0.5, /* */1.0, 0.0, 0.0,
+    /* */0.5, /*    */0.0, /* */0.5, /* */1.0, 0.0, 0.0,
+    /**/-0.5, /*    */0.0, /* */0.5, /* */1.0, 0.0, 0.0,
+    //
+    // First base triangle 2 - red
+    /* */0.5, /*    */0.0, /**/-0.5, /* */1.0, 0.0, 0.0,
+    /**/-0.5, /*    */0.0, /* */0.5, /* */1.0, 0.0, 0.0,
+    /**/-0.5, /*    */0.0, /**/-0.5, /* */1.0, 0.0, 0.0,
     //
     // Second face - green
-    /* */0.5, /*    */0.0, /**/0.5, /*  */0.0, 1.0, 0.0,
-    /* */0.0, /**/0.70711, /**/0.0, /*  */0.0, 1.0, 0.0,
-    /**/-0.5, /*    */0.0, /**/0.5, /*  */0.0, 1.0, 0.0,
+    /* */0.5, /*    */0.0, /* */0.5, /* */0.0, 1.0, 0.0,
+    /* */0.0, /**/0.70711, /* */0.0, /* */0.0, 1.0, 0.0,
+    /**/-0.5, /*    */0.0, /* */0.5, /* */0.0, 1.0, 0.0,
     //
     // Third face - blue
-    /**/0.5, /*    */0.0, /**/-0.5, /*  */0.0, 0.0, 1.0,
-    /**/0.0, /**/0.70711, /* */0.0, /*  */0.0, 0.0, 1.0,
-    /**/0.5, /*    */0.0, /* */0.5, /*  */0.0, 0.0, 1.0,
+    /**/0.5, /*     */0.0, /**/-0.5, /* */0.0, 0.0, 1.0,
+    /**/0.0, /* */0.70711, /* */0.0, /* */0.0, 0.0, 1.0,
+    /**/0.5, /*     */0.0, /* */0.5, /* */0.0, 0.0, 1.0,
     //
     // Forth face - yellow
     /**/-0.5, /*    */0.0, /**/-0.5, /* */1.0, 1.0, 0.0,
     /* */0.0, /**/0.70711, /* */0.0, /* */1.0, 1.0, 0.0,
     /* */0.5, /*    */0.0, /**/-0.5, /* */1.0, 1.0, 0.0,
     //
-    // Fifth face - purple
+    // Fifth face - light blue
     /**/-0.5, /*    */0.0, /* */0.5, /* */0.0, 1.0, 1.0,
     /* */0.0, /**/0.70711, /* */0.0, /* */0.0, 1.0, 1.0,
     /**/-0.5, /*    */0.0, /**/-0.5, /* */0.0, 1.0, 1.0,
