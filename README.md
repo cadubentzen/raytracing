@@ -9,7 +9,7 @@ It consists of a Ray Tracing implementation in WebGL. [Click here to see our dem
 #### Browser requirements:
 - Chrome >= 50
 - Edge >= 13
-- Firefox >= 45 (though Firefox Quantum was failing to play the rotating pyramid)
+- Firefox >= 45
 - Opera >= 37
 - Safari >= 10
 
