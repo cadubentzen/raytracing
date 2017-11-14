@@ -45,7 +45,7 @@ function initDemo() {
   let gl = canvas.getContext('webgl');
 
   if (!gl) {
-    // Some browser have only experimental support.
+    // Some browsers have only experimental support.
     console.log('WebGL not supported. Using Experimental WebGL.');
     gl = canvas.getContext('experimental-webgl');
   }
@@ -61,6 +61,13 @@ function initDemo() {
   // Clear window in purple
   gl.clearColor(0.5, 0.5, 1.0, 1.0);
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+  // Enable depth testing and face culling
+  gl.enable(gl.DEPTH_TEST);
+  gl.enable(gl.CULL_FACE);
+  gl.cullFace(gl.BACK);
+  gl.frontFace(gl.CCW);
+
 
   // Create shaders
   // Prior to drawing, we need to compile the shaders.
@@ -98,53 +105,59 @@ function initDemo() {
     return;
   }
 
-  // FIXME: Check sorting of vertices
   // Create buffer
   const pyramidVertices = [
-    //     X,        Y,       Z,            R,   G,   B
+    //     X,       Y,           Z,         R,   G,   B
     //
-    // First face
-    /**/-0.5, /**/-0.5, /**/0.0, /*     */1.0, 0.0, 0.0,
-    /* */0.5, /**/-0.5, /**/0.0, /*     */0.0, 1.0, 0.0,
-    /* */0.5, /* */0.5, /**/0.0, /*     */0.0, 0.0, 1.0,
-    /**/-0.5, /* */0.5, /**/0.0, /*     */0.0, 0.0, 0.0,
+    // First face (base) - red
+    /* */0.5, /**/0.0, /*   */-0.5, /*  */1.0, 0.0, 0.0,
+    /* */0.5, /**/0.0, /*    */0.5, /*  */1.0, 0.0, 0.0,
+    /**/-0.5, /**/0.0, /*    */0.5, /*  */1.0, 0.0, 0.0,
+    /**/-0.5, /**/0.0, /*   */-0.5, /*  */1.0, 0.0, 0.0,
     //
-    // Second face
-    /**/-0.5, /**/-0.5, /**/0.0, /*     */1.0, 0.0, 0.0,
-    /* */0.5, /**/-0.5, /**/0.0, /*     */0.0, 1.0, 0.0,
-    /*   */0, /*   */0, 0.70711, /*     */0.0, 0.0, 0.0,
+    // Second face - green
+    /* */0.5, /*    */0.0, /**/0.5, /*  */0.0, 1.0, 0.0,
+    /* */0.0, /**/0.70711, /**/0.0, /*  */0.0, 1.0, 0.0,
+    /**/-0.5, /*    */0.0, /**/0.5, /*  */0.0, 1.0, 0.0,
     //
-    // Third face
-    /* */0.5, /**/-0.5, /**/0.0, /*     */0.0, 1.0, 0.0,
-    /* */0.5, /* */0.5, /**/0.0, /*     */0.0, 0.0, 1.0,
-    /*   */0, /*   */0, 0.70711, /*     */0.0, 0.0, 0.0,
+    // Third face - blue
+    /**/0.5, /*    */0.0, /**/-0.5, /*  */0.0, 0.0, 1.0,
+    /**/0.0, /**/0.70711, /* */0.0, /*  */0.0, 0.0, 1.0,
+    /**/0.5, /*    */0.0, /* */0.5, /*  */0.0, 0.0, 1.0,
     //
-    // Forth face
-    /* */0.5, /* */0.5, /**/0.0, /*     */0.0, 0.0, 1.0,
-    /**/-0.5, /* */0.5, /**/0.0, /*     */0.0, 0.0, 0.0,
-    /*   */0, /*   */0, 0.70711, /*     */0.0, 0.0, 0.0,
+    // Forth face - yellow
+    /**/-0.5, /*    */0.0, /**/-0.5, /* */1.0, 1.0, 0.0,
+    /* */0.0, /**/0.70711, /* */0.0, /* */1.0, 1.0, 0.0,
+    /* */0.5, /*    */0.0, /**/-0.5, /* */1.0, 1.0, 0.0,
     //
-    // Fifth face
-    /**/-0.5, /**/-0.5, /**/0.0, /*     */0.0, 0.0, 1.0,
-    /**/-0.5, /* */0.5, /**/0.0, /*     */0.0, 0.0, 0.0,
-    /*   */0, /*   */0, 0.70711, /*     */0.0, 0.0, 0.0,
+    // Fifth face - purple
+    /**/-0.5, /*    */0.0, /* */0.5, /* */0.0, 1.0, 1.0,
+    /* */0.0, /**/0.70711, /* */0.0, /* */0.0, 1.0, 1.0,
+    /**/-0.5, /*    */0.0, /**/-0.5, /* */0.0, 1.0, 1.0,
   ];
 
   const pyramidIndices = [
-    // First face
+    // First face - base
     0, 1, 2,
     0, 2, 3,
     // Second face
-    4, 5, 6, // FIXME: need to complete this
+    4, 5, 6,
     // Third face
+    7, 8, 9,
     // Fourth face
+    10, 11, 12,
     // Fifth face
+    13, 14, 15,
   ];
 
-  // Upload verticex from RAM to graphics memory
+  // Upload vertices from RAM to graphics memory
   const pyramidVertexBufferObject = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, pyramidVertexBufferObject);
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(pyramidVertices), gl.STATIC_DRAW);
+
+  const pyramidIndexBufferObject = gl.createBuffer();
+  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, pyramidIndexBufferObject);
+  gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(pyramidIndices), gl.STATIC_DRAW);
 
   // Vertices positions
   const positionAttribLocation = gl.getAttribLocation(program, 'vertPosition');
@@ -184,7 +197,7 @@ function initDemo() {
   const projMatrix = new Float32Array(16);
 
   mat4.identity(worldMatrix);
-  mat4.lookAt(viewMatrix, [0, 0, -2], [0, 0, 0], [0, 1, 0]);
+  mat4.lookAt(viewMatrix, [-1, 0, -3], [0, 0, 0], [0, 1, 0]);
   mat4.perspective(projMatrix, glMatrix.toRadian(45), canvas.width / canvas.height, 0.1, 1000.0);
 
   gl.uniformMatrix4fv(matWorldUniformLocation, gl.FALSE, worldMatrix);
@@ -197,7 +210,7 @@ function initDemo() {
   let angle = 0;
   function loop() {
     angle = ((performance.now() / 1000) / 6) * 2 * Math.PI;
-    mat4.rotate(worldMatrix, identityMatrix, angle, [0, 1, 0]);
+    mat4.rotate(worldMatrix, identityMatrix, angle, [1, 0, 0]);
     gl.uniformMatrix4fv(matWorldUniformLocation, gl.FALSE, worldMatrix);
 
     // Clear canvas
@@ -205,7 +218,7 @@ function initDemo() {
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
     // Draw again
-    gl.drawArrays(gl.TRIANGLE_FAN, 0, 5);
+    gl.drawElements(gl.TRIANGLES, pyramidIndices.length, gl.UNSIGNED_SHORT, 0);
 
     requestAnimationFrame(loop);
   }
