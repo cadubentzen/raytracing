@@ -69,7 +69,7 @@ function initDemo() {
   // Create corners in a buffer
   // As this application relies on the fragment fragment buffer,
   // we only need to tell OpenGL to draw the whole area and the
-  // pixels are processed individually (and in parallel) in the 
+  // pixels are processed individually (and in parallel) in the
   // fragment shader
   const corners = [
     //     X,        Y,
