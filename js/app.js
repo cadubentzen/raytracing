@@ -25,15 +25,8 @@ function initDemo() {
   gl.viewport(0, 0, window.innerWidth, window.innerHeight);
 
   // Clear window in purple
-  gl.clearColor(0.5, 0.5, 1.0, 1.0);
+  gl.clearColor(0.0, 0.0, 0.0, 1.0);
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
-  // Enable depth testing and face culling
-  gl.enable(gl.DEPTH_TEST);
-  gl.enable(gl.CULL_FACE);
-  gl.cullFace(gl.BACK);
-  gl.frontFace(gl.CCW);
-
 
   // Create shaders
   // Prior to drawing, we need to compile the shaders.
@@ -48,11 +41,13 @@ function initDemo() {
   gl.compileShader(vertexShader);
   if (!gl.getShaderParameter(vertexShader, gl.COMPILE_STATUS)) {
     console.log('Error compiling vertexShader');
+    return;
   }
 
   gl.compileShader(fragmentShader);
   if (!gl.getShaderParameter(fragmentShader, gl.COMPILE_STATUS)) {
     console.log('Error compiling fragmentShader');
+    return;
   }
 
   // Attach shaders to a GL program
@@ -71,107 +66,62 @@ function initDemo() {
     return;
   }
 
-  // Create buffer
-  const pyramidVertices = [
-    //     X,           Y,        Z,        R,   G,   B
-    //
-    // First base triangle 1 - red
-    /* */0.5, /*    */0.0, /**/-0.5, /* */1.0, 0.0, 0.0,
-    /* */0.5, /*    */0.0, /* */0.5, /* */1.0, 0.0, 0.0,
-    /**/-0.5, /*    */0.0, /* */0.5, /* */1.0, 0.0, 0.0,
-    //
-    // First base triangle 2 - red
-    /* */0.5, /*    */0.0, /**/-0.5, /* */1.0, 0.0, 0.0,
-    /**/-0.5, /*    */0.0, /* */0.5, /* */1.0, 0.0, 0.0,
-    /**/-0.5, /*    */0.0, /**/-0.5, /* */1.0, 0.0, 0.0,
-    //
-    // Second face - green
-    /* */0.5, /*    */0.0, /* */0.5, /* */0.0, 1.0, 0.0,
-    /* */0.0, /**/0.70711, /* */0.0, /* */0.0, 1.0, 0.0,
-    /**/-0.5, /*    */0.0, /* */0.5, /* */0.0, 1.0, 0.0,
-    //
-    // Third face - blue
-    /**/0.5, /*     */0.0, /**/-0.5, /* */0.0, 0.0, 1.0,
-    /**/0.0, /* */0.70711, /* */0.0, /* */0.0, 0.0, 1.0,
-    /**/0.5, /*     */0.0, /* */0.5, /* */0.0, 0.0, 1.0,
-    //
-    // Forth face - yellow
-    /**/-0.5, /*    */0.0, /**/-0.5, /* */1.0, 1.0, 0.0,
-    /* */0.0, /**/0.70711, /* */0.0, /* */1.0, 1.0, 0.0,
-    /* */0.5, /*    */0.0, /**/-0.5, /* */1.0, 1.0, 0.0,
-    //
-    // Fifth face - light blue
-    /**/-0.5, /*    */0.0, /* */0.5, /* */0.0, 1.0, 1.0,
-    /* */0.0, /**/0.70711, /* */0.0, /* */0.0, 1.0, 1.0,
-    /**/-0.5, /*    */0.0, /**/-0.5, /* */0.0, 1.0, 1.0,
+  // Create corners in a buffer
+  // As this application relies on the fragment fragment buffer,
+  // we only need to tell OpenGL to draw the whole area and the
+  // pixels are processed individually (and in parallel) in the
+  // fragment shader
+  const corners = [
+    //     X,        Y,
+    /* */1.0, /* */1.0,
+    /**/-1.0, /* */1.0,
+    /**/-1.0, /**/-1.0,
+    /* */1.0, /**/-1.0,
   ];
 
   // Upload vertices from RAM to graphics memory
-  const pyramidVertexBufferObject = gl.createBuffer();
-  gl.bindBuffer(gl.ARRAY_BUFFER, pyramidVertexBufferObject);
-  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(pyramidVertices), gl.STATIC_DRAW);
+  const cornersVertexBufferObject = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, cornersVertexBufferObject);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(corners), gl.STATIC_DRAW);
 
-  // Vertices positions
-  const positionAttribLocation = gl.getAttribLocation(program, 'vertPosition');
+  // Vertices
+  const vertexPositionAttribLocation = gl.getAttribLocation(program, 'vertexPosition');
   gl.vertexAttribPointer(
-    positionAttribLocation, // index
-    3, // size
+    vertexPositionAttribLocation, // index
+    2, // size
     gl.FLOAT, // type
     gl.FALSE, // normalized
-    6 * Float32Array.BYTES_PER_ELEMENT, // stride
+    0, // stride
     0, // offset
   );
 
-  // Color in the vertices
-  const colorAttribLocation = gl.getAttribLocation(program, 'vertColor');
-  gl.vertexAttribPointer(
-    colorAttribLocation, // index
-    3, // size
-    gl.FLOAT, // type
-    gl.FALSE, // normalized
-    6 * Float32Array.BYTES_PER_ELEMENT, // stride
-    3 * Float32Array.BYTES_PER_ELEMENT, // offset
-  );
-
-  gl.enableVertexAttribArray(positionAttribLocation);
-  gl.enableVertexAttribArray(colorAttribLocation);
+  gl.enableVertexAttribArray(vertexPositionAttribLocation);
 
   // Bind program to WebGL
   gl.useProgram(program);
 
-  // Initialize matrices
-  const matWorldUniformLocation = gl.getUniformLocation(program, 'mWorld');
-  const matViewUniformLocation = gl.getUniformLocation(program, 'mView');
-  const matProjUniformLocation = gl.getUniformLocation(program, 'mProj');
+  // Main rendering loop that changes the circle radius
+  // between 0.1 and 0.9
+  const radiusLocation = gl.getUniformLocation(program, 'radius');
 
-  const worldMatrix = new Float32Array(16);
-  const viewMatrix = new Float32Array(16);
-  const projMatrix = new Float32Array(16);
+  let radius = 0.5;
 
-  mat4.identity(worldMatrix);
-  mat4.lookAt(viewMatrix, [-1, 0, -3], [0, 0, 0], [0, 1, 0]);
-  mat4.perspective(projMatrix, glMatrix.toRadian(45), canvas.width / canvas.height, 0.1, 1000.0);
+  let past = performance.now();
+  let current = past;
+  let direction = 1;
 
-  gl.uniformMatrix4fv(matWorldUniformLocation, gl.FALSE, worldMatrix);
-  gl.uniformMatrix4fv(matViewUniformLocation, gl.FALSE, viewMatrix);
-  gl.uniformMatrix4fv(matProjUniformLocation, gl.FALSE, projMatrix);
-
-  // Rendering loop
-  const identityMatrix = new Float32Array(16);
-  mat4.identity(identityMatrix);
-  let angle = 0;
   function loop() {
-    angle = ((performance.now() / 1000) / 6) * 2 * Math.PI;
-    mat4.rotate(worldMatrix, identityMatrix, angle, [1, 0, 0]);
-    gl.uniformMatrix4fv(matWorldUniformLocation, gl.FALSE, worldMatrix);
-
-    // Clear canvas
-    gl.clearColor(0.5, 0.5, 1.0, 1.0);
-    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
-    // Draw again
-    gl.drawArrays(gl.TRIANGLES, 0, 18);
-
+    current = performance.now();
+    if (direction) {
+      radius += (current - past) / 1000;
+      if (radius >= 0.9) direction = 0;
+    } else {
+      radius -= (current - past) / 1000;
+      if (radius <= 0.1) direction = 1;
+    }
+    past = current;
+    gl.uniform1f(radiusLocation, radius);
+    gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
     requestAnimationFrame(loop);
   }
 

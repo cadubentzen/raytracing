@@ -6,11 +6,19 @@ const fragmentShaderCode = `
 
 precision mediump float;
 
-varying vec3 fragColor;
+varying vec2 vPosition;
+
+uniform float radius;
 
 void main()
 {
-  gl_FragColor = vec4(fragColor, 1.0);
+    // float radius = 0.5;
+    float dist = distance(vPosition, vec2(0.0, 0.0)); 
+    if (dist <= radius) {
+        gl_FragColor = vec4(dist/radius, 0.0, 0.8, 1.0);
+    } else {
+        gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
+    }
 }
 
 `;

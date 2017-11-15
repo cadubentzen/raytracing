@@ -6,19 +6,14 @@ const vertexShaderCode = `
 
 precision mediump float;
 
-attribute vec3 vertPosition;
-attribute vec3 vertColor;
+attribute vec2 vertexPosition;
 
-varying vec3 fragColor;
-
-uniform mat4 mWorld;
-uniform mat4 mView;
-uniform mat4 mProj;
+varying vec2 vPosition;
 
 void main()
 {
-  fragColor = vertColor;
-  gl_Position = mProj * mView * mWorld * vec4(vertPosition, 1.0);
+  gl_Position = vec4(vertexPosition, 1.0, 1.0);
+  vPosition = vertexPosition;
 }
 
 `;
