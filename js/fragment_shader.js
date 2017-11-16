@@ -6,16 +6,52 @@ const fragmentShaderCode = `
 
 precision mediump float;
 
-varying vec2 vPosition;
+varying vec3 vPosition;
 
+uniform vec3 cameraPosition;
+
+uniform vec3 sphereCenter;
 uniform float radius;
+
+uniform vec3 lightPosition;
+
+bool intersectSphere(vec3 rayDirection, out float dist)
+{
+   vec3 rayToSphere = sphereCenter - cameraPosition;
+   float b = dot(rayDirection, -rayToSphere); 
+   float d =  (b * b) - dot(rayToSphere, rayToSphere) + (radius * radius);
+
+   if (d > 0.0) {
+       dist = -b - sqrt(d);
+       if (dist < 0.0) {
+            dist = -b + sqrt(d);
+            if (dist < 0.0)
+                return false;
+       }
+       return true;
+   } else {
+       return false;
+   }
+}
 
 void main()
 {
-    // float radius = 0.5;
-    float dist = distance(vPosition, vec2(0.0, 0.0)); 
-    if (dist <= radius) {
-        gl_FragColor = vec4(dist/radius, 0.0, 0.8, 1.0);
+    vec3 rayDirection = normalize(vPosition - cameraPosition);
+
+    float dist;
+    if (intersectSphere(rayDirection, dist)) {
+        vec3 intersectionPoint = cameraPosition + rayDirection*dist; 
+        vec3 N = normalize(intersectionPoint - sphereCenter);
+        vec3 L = normalize(lightPosition - intersectionPoint);
+        vec3 R = reflect(-rayDirection, N);
+        vec3 ambientColor = vec3(1.0, 0.0, 0.0);
+        vec3 sourceColor = vec3(1.0, 1.0, 1.0);
+        float ka = 0.55, kd = 0.3, ks = 0.15;
+        float n = 1.5;
+        vec3 color = ka * ambientColor 
+                     + (kd * dot(L, N) 
+                        + ks * pow(dot(-rayDirection, R), n)) * sourceColor;
+        gl_FragColor = vec4(color, 1.0);
     } else {
         gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
     }
