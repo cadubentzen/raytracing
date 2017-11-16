@@ -66,6 +66,7 @@ function initDemo() {
     return;
   }
 
+
   // Create corners in a buffer
   // As this application relies on the fragment fragment buffer,
   // we only need to tell OpenGL to draw the whole area and the
@@ -99,6 +100,10 @@ function initDemo() {
 
   // Bind program to WebGL
   gl.useProgram(program);
+
+  const ratioLocation = gl.getUniformLocation(program, 'ratio');
+  const ratio = canvas.width / canvas.height;
+  gl.uniform1f(ratioLocation, ratio);
 
   // Set properties
   const cameraPositionLocation = gl.getUniformLocation(program, 'cameraPosition');
