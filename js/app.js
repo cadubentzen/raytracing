@@ -22,7 +22,7 @@ function initDemo() {
   }
 
   // Adjust viewport to window size
-  gl.viewport(0, 0, window.innerWidth, window.innerHeight);
+  gl.viewport(0, 0, canvas.width, canvas.height);
 
   // Clear window in purple
   gl.clearColor(0.0, 0.0, 0.0, 1.0);
@@ -100,30 +100,17 @@ function initDemo() {
   // Bind program to WebGL
   gl.useProgram(program);
 
-  // Main rendering loop that changes the circle radius
-  // between 0.1 and 0.9
+  // Set properties
+  const cameraPositionLocation = gl.getUniformLocation(program, 'cameraPosition');
+  const sphereCenterLocation = gl.getUniformLocation(program, 'sphereCenter');
+  const lightPositionLocation = gl.getUniformLocation(program, 'lightPosition');
   const radiusLocation = gl.getUniformLocation(program, 'radius');
 
-  let radius = 0.5;
+  gl.uniform3f(cameraPositionLocation, 0.0, 0.0, 5.0);
+  gl.uniform3f(sphereCenterLocation, 0.0, 0.0, 0.0);
+  gl.uniform3f(lightPositionLocation, 1.0, 1.0, 1.0);
+  gl.uniform1f(radiusLocation, 0.5);
 
-  let past = performance.now();
-  let current = past;
-  let direction = 1;
-
-  function loop() {
-    current = performance.now();
-    if (direction) {
-      radius += (current - past) / 1000;
-      if (radius >= 0.9) direction = 0;
-    } else {
-      radius -= (current - past) / 1000;
-      if (radius <= 0.1) direction = 1;
-    }
-    past = current;
-    gl.uniform1f(radiusLocation, radius);
-    gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
-    requestAnimationFrame(loop);
-  }
-
-  requestAnimationFrame(loop);
+  // Draw the screen
+  gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
 }
