@@ -40,13 +40,19 @@ function initDemo() {
 
   gl.compileShader(vertexShader);
   if (!gl.getShaderParameter(vertexShader, gl.COMPILE_STATUS)) {
-    console.log('Error compiling vertexShader');
+    console.log(
+      'Error compiling vertexShader',
+      gl.getShaderInfoLog(vertexShader),
+    );
     return;
   }
 
   gl.compileShader(fragmentShader);
   if (!gl.getShaderParameter(fragmentShader, gl.COMPILE_STATUS)) {
-    console.log('Error compiling fragmentShader');
+    console.log(
+      'Error compiling fragmentShader',
+      gl.getShaderInfoLog(fragmentShader),
+    );
     return;
   }
 
@@ -57,12 +63,19 @@ function initDemo() {
   gl.linkProgram(program);
   // Additional checking if everything went fine
   if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-    console.error('Error linking program', gl.getProgramInfoLog(program));
+    console.error(
+      'Error linking program',
+      gl.getProgramInfoLog(program),
+    );
     return;
   }
+
   gl.validateProgram(program);
   if (!gl.getProgramParameter(program, gl.VALIDATE_STATUS)) {
-    console.error('Error validating program', gl.getProgramInfoLog(program));
+    console.error(
+      'Error validating program',
+      gl.getProgramInfoLog(program),
+    );
     return;
   }
 
@@ -85,7 +98,9 @@ function initDemo() {
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(screenCorners), gl.STATIC_DRAW);
 
   // Vertices
-  const vertexPositionAttribLocation = gl.getAttribLocation(program, 'vertexPosition');
+  const vertexPositionAttribLocation =
+    gl.getAttribLocation(program, 'vertexPosition');
+
   gl.vertexAttribPointer(
     vertexPositionAttribLocation, // index
     2, // size
@@ -120,15 +135,17 @@ function initDemo() {
   const cameraPositionLocation = gl.getUniformLocation(program, 'cameraPosition');
   const sphereCenterLocation = gl.getUniformLocation(program, 'sphereCenter');
   const lightPositionLocation = gl.getUniformLocation(program, 'lightPosition');
-  const radiusLocation = gl.getUniformLocation(program, 'radius');
+  const floorRadiusLocation = gl.getUniformLocation(program, 'floorRadius');
+  const floorHeightLocation = gl.getUniformLocation(program, 'floorHeight');
 
-  gl.uniform3f(sphereCenterLocation, 0.2, 0.0, 0.0);
+  gl.uniform3f(sphereCenterLocation, 1.0, 0.0, 0.0);
   gl.uniform3f(lightPositionLocation, 5.0, 5.0, 5.0);
-  gl.uniform1f(radiusLocation, 1.0);
+  gl.uniform1f(floorRadiusLocation, 50.0);
+  gl.uniform1f(floorHeightLocation, -1.0);
 
   const up = vec3.fromValues(0.0, 1.0, 0.0);
   const cameraTo = vec3.fromValues(0.0, 0.0, 0.0);
-  const cameraInitialPosition = vec3.fromValues(1.0, 1.0, 1.0);
+  const cameraInitialPosition = vec3.fromValues(5.0, 0.0, 5.0);
   const cameraPosition = new Float32Array(3);
 
   const cameraDirection = new Float32Array(3);
