@@ -78,8 +78,8 @@ void main()
   } else if (intersectFloor(rayDirection, V, N, L)) {
     vec3 Ia = vec3(0.5, 0.5, 0.5);
     vec3 Ii = vec3(1.0, 1.0, 1.0);
-    float ka = 0.8, kd = 0.1, ks = 0.1;
-    float n = 1.5;
+    float ka = 0.8, kd = 0.3, ks = 0.4;
+    float n = 5.0;
     gl_FragColor = colorAt(Ia, Ii, V, N, L, ka, kd, ks, n);
   } else {
     gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
