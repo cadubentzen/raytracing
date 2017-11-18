@@ -7,18 +7,14 @@ const vertexShaderCode = `
 precision mediump float;
 
 attribute vec2 vertexPosition;
-uniform float ratio;
+attribute vec3 plotPosition;
 
-varying vec3 vPosition;
+varying vec3 nearPosition;
 
 void main()
 {
   gl_Position = vec4(vertexPosition, 1.0, 1.0);
-  if (ratio > 1.0) {
-    vPosition = vec3(ratio*vertexPosition[0], vertexPosition[1], 1.0);
-  } else {
-    vPosition = vec3(vertexPosition[0], vertexPosition[1]/ratio, 1.0);
-  }
+  nearPosition = plotPosition;
 }
 
 `;
