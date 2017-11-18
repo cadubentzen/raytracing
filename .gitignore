@@ -3,3 +3,6 @@ package-lock.json
 
 # vim files
 *.swp
+
+# Ignore GLSL files, as they are only symlink to JS files
+*.glsl

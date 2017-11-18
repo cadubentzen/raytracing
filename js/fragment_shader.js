@@ -6,7 +6,7 @@ const fragmentShaderCode = `
 
 precision mediump float;
 
-varying vec3 vPosition;
+varying vec3 nearPosition;
 
 uniform vec3 cameraPosition;
 
@@ -36,7 +36,7 @@ bool intersectSphere(vec3 rayDirection, out float dist)
 
 void main()
 {
-    vec3 rayDirection = normalize(vPosition - cameraPosition);
+    vec3 rayDirection = normalize(nearPosition - cameraPosition);
 
     float dist;
     if (intersectSphere(rayDirection, dist)) {
@@ -45,9 +45,9 @@ void main()
         vec3 L = normalize(lightPosition - intersectionPoint);
         vec3 R = reflect(-rayDirection, N);
         vec3 ambientColor = vec3(1.0, 0.0, 0.0);
-        vec3 sourceColor = vec3(1.0, 1.0, 1.0);
-        float ka = 0.55, kd = 0.3, ks = 0.15;
-        float n = 1.5;
+        vec3 sourceColor = vec3(1.0, 1.0, 0.0);
+        float ka = 0.7, kd = 0.9, ks = 0.6;
+        float n = 5.0;
         vec3 color = ka * ambientColor 
                      + (kd * dot(L, N) 
                         + ks * pow(dot(-rayDirection, R), n)) * sourceColor;

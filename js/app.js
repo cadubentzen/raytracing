@@ -1,4 +1,4 @@
-/* global mat4 glMatrix vertexShaderCode fragmentShaderCode */
+/* global mat4 vec3 glMatrix vertexShaderCode fragmentShaderCode */
 
 // Function that is called on load.
 function initDemo() {
@@ -67,12 +67,12 @@ function initDemo() {
   }
 
 
-  // Create corners in a buffer
+  // Create screen corners in a buffer
   // As this application relies on the fragment fragment buffer,
   // we only need to tell OpenGL to draw the whole area and the
   // pixels are processed individually (and in parallel) in the
   // fragment shader
-  const corners = [
+  const screenCorners = [
     //     X,        Y,
     /* */1.0, /* */1.0,
     /**/-1.0, /* */1.0,
@@ -80,10 +80,9 @@ function initDemo() {
     /* */1.0, /**/-1.0,
   ];
 
-  // Upload vertices from RAM to graphics memory
-  const cornersVertexBufferObject = gl.createBuffer();
-  gl.bindBuffer(gl.ARRAY_BUFFER, cornersVertexBufferObject);
-  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(corners), gl.STATIC_DRAW);
+  const screenCornersVertexBufferObject = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, screenCornersVertexBufferObject);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(screenCorners), gl.STATIC_DRAW);
 
   // Vertices
   const vertexPositionAttribLocation = gl.getAttribLocation(program, 'vertexPosition');
@@ -98,12 +97,24 @@ function initDemo() {
 
   gl.enableVertexAttribArray(vertexPositionAttribLocation);
 
+  const nearVertexBufferObject = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, nearVertexBufferObject);
+
+  // Near vertices on attribute
+  const nearPositionAttribLocation = gl.getAttribLocation(program, 'plotPosition');
+  gl.vertexAttribPointer(
+    nearPositionAttribLocation, // index
+    3, // size
+    gl.FLOAT, // type
+    gl.FALSE, // normalized
+    0, // stride
+    0, // offset
+  );
+
+  gl.enableVertexAttribArray(nearPositionAttribLocation);
+
   // Bind program to WebGL
   gl.useProgram(program);
-
-  const ratioLocation = gl.getUniformLocation(program, 'ratio');
-  const ratio = canvas.width / canvas.height;
-  gl.uniform1f(ratioLocation, ratio);
 
   // Set properties
   const cameraPositionLocation = gl.getUniformLocation(program, 'cameraPosition');
@@ -111,11 +122,81 @@ function initDemo() {
   const lightPositionLocation = gl.getUniformLocation(program, 'lightPosition');
   const radiusLocation = gl.getUniformLocation(program, 'radius');
 
-  gl.uniform3f(cameraPositionLocation, 0.0, 0.0, 5.0);
-  gl.uniform3f(sphereCenterLocation, 0.0, 0.0, 0.0);
-  gl.uniform3f(lightPositionLocation, 1.0, 1.0, 1.0);
-  gl.uniform1f(radiusLocation, 0.5);
+  gl.uniform3f(sphereCenterLocation, 0.2, 0.0, 0.0);
+  gl.uniform3f(lightPositionLocation, 5.0, 5.0, 5.0);
+  gl.uniform1f(radiusLocation, 1.0);
 
-  // Draw the screen
-  gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
+  const up = vec3.fromValues(0.0, 1.0, 0.0);
+  const cameraTo = vec3.fromValues(0.0, 0.0, 0.0);
+  const cameraInitialPosition = vec3.fromValues(1.0, 1.0, 1.0);
+  const cameraPosition = new Float32Array(3);
+
+  const cameraDirection = new Float32Array(3);
+  const cameraUp = new Float32Array(3);
+  const cameraLeft = new Float32Array(3);
+
+  const nearCenter = new Float32Array(3);
+  const nearTopLeft = new Float32Array(3);
+  const nearBottomLeft = new Float32Array(3);
+  const nearTopRight = new Float32Array(3);
+  const nearBottomRight = new Float32Array(3);
+
+  const ratio = canvas.width / canvas.height;
+
+  function renderLoop() {
+    const angle = 2 * Math.PI * ((performance.now() / 1000.0) / 6.0);
+    // Calc new camera position
+    vec3.rotateY(cameraPosition, cameraInitialPosition, cameraTo, angle);
+
+    gl.uniform3f(
+      cameraPositionLocation,
+      cameraPosition[0],
+      cameraPosition[1],
+      cameraPosition[2],
+    );
+
+    // Calc new camera direction
+    vec3.subtract(cameraDirection, cameraTo, cameraPosition);
+    vec3.normalize(cameraDirection, cameraDirection);
+
+    // Calc camera left vector
+    vec3.cross(cameraLeft, up, cameraDirection);
+    vec3.normalize(cameraLeft, cameraLeft);
+    // Calc camera up vector
+    vec3.cross(cameraUp, cameraDirection, cameraLeft);
+    vec3.normalize(cameraUp, cameraUp);
+
+    // Calc near plane center
+    vec3.add(nearCenter, cameraPosition, cameraDirection);
+
+    // Scale camera left to keep ratio
+    vec3.scale(cameraLeft, cameraLeft, ratio);
+
+    // Calc near corners
+    // TopLeft
+    vec3.add(nearTopLeft, nearCenter, cameraUp);
+    vec3.add(nearTopLeft, nearTopLeft, cameraLeft);
+    // BottomLeft
+    vec3.subtract(nearBottomLeft, nearCenter, cameraUp);
+    vec3.add(nearBottomLeft, nearBottomLeft, cameraLeft);
+    // TopRight
+    vec3.add(nearTopRight, nearCenter, cameraUp);
+    vec3.subtract(nearTopRight, nearTopRight, cameraLeft);
+    // BottomRight
+    vec3.subtract(nearBottomRight, nearCenter, cameraUp);
+    vec3.subtract(nearBottomRight, nearBottomRight, cameraLeft);
+
+    const corners = new Float32Array(12);
+    corners.set(nearTopRight, 0);
+    corners.set(nearTopLeft, 3);
+    corners.set(nearBottomLeft, 6);
+    corners.set(nearBottomRight, 9);
+
+    gl.bufferData(gl.ARRAY_BUFFER, corners, gl.STATIC_DRAW);
+    gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
+
+    requestAnimationFrame(renderLoop);
+  }
+
+  requestAnimationFrame(renderLoop);
 }
