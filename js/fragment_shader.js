@@ -191,8 +191,26 @@ bool intersectSomething(vec3 origin, vec3 rayDirection, out vec3 intersection,
   return true;
 }
 
+bool intersectSomethingGoingToLight(vec3 origin, vec3 N_aux) {
+  float distToLight = length(lightPosition - origin);
+  vec3 rayDirection = normalize(lightPosition - origin);
+
+  if (dot(N_aux, rayDirection) < 0.0) return false;
+
+  vec3 intersection;
+  float dist;
+  vec3 V, N, L;
+
+  if (intersectSphere(origin, rayDirection, intersection, dist, V, N, L)
+      || intersectCube(origin, rayDirection, intersection, dist, V, N, L)){
+    if (dist < distToLight) return true;
+  }
+
+  return false;
+}
+
 void main() {
-  lightPosition = vec3(50.0, 50.0, 50.0);
+  lightPosition = vec3(10.0, 10.0, 10.0);
   vec3 rayDirection = normalize(nearPosition - cameraPosition);
 
   vec3 intersection1, intersection2;
@@ -219,6 +237,10 @@ void main() {
   vec3 N;
 
   if (intersectSomething(cameraPosition, rayDirection, intersection1, N, color, reflectedColor)) {
+    if (intersectSomethingGoingToLight(intersection1, N)) {
+      gl_FragColor = vec4(0.1, 0.1, 0.1, 1.0);
+      return;
+    }
     colorMax = (reflectedColor + vec3(0.7))/1.7;
     rayDirection = reflect(rayDirection, N);
     if (intersectSomething(intersection1, rayDirection, intersection2, N, tempColor, reflectedColor)) {
