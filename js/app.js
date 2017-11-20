@@ -134,13 +134,13 @@ function initDemo() {
   // Set properties
   const cameraPositionLocation = gl.getUniformLocation(program, 'cameraPosition');
   const sphereCenterLocation = gl.getUniformLocation(program, 'sphereCenter');
-  const lightPositionLocation = gl.getUniformLocation(program, 'lightPosition');
+  const cubeCornerLocation = gl.getUniformLocation(program, 'cubeCorner');
   const floorRadiusLocation = gl.getUniformLocation(program, 'floorRadius');
   const floorHeightLocation = gl.getUniformLocation(program, 'floorHeight');
 
-  gl.uniform3f(sphereCenterLocation, 1.0, 0.0, 0.0);
-  gl.uniform3f(lightPositionLocation, 5.0, 5.0, 5.0);
-  gl.uniform1f(floorRadiusLocation, 50.0);
+  gl.uniform3f(sphereCenterLocation, 3.0, 0.0, 0.0);
+  gl.uniform3f(cubeCornerLocation, -1.0, 0.0, 0.0);
+  gl.uniform1f(floorRadiusLocation, 10.0);
   gl.uniform1f(floorHeightLocation, -1.0);
 
   const up = vec3.fromValues(0.0, 1.0, 0.0);
@@ -158,9 +158,18 @@ function initDemo() {
   const nearTopRight = new Float32Array(3);
   const nearBottomRight = new Float32Array(3);
 
-  const ratio = canvas.width / canvas.height;
+  let ratio = canvas.width / canvas.height;
 
   function renderLoop() {
+    // resize canvas in case window size has changed
+    if (canvas.width !== window.innerWidth
+        || canvas.height !== window.innerHeight) {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      gl.viewport(0, 0, canvas.width, canvas.height);
+      ratio = canvas.width / canvas.height;
+    }
+
     const angle = 2 * Math.PI * ((performance.now() / 1000.0) / 6.0);
     // Calc new camera position
     vec3.rotateY(cameraPosition, cameraInitialPosition, cameraTo, angle);
