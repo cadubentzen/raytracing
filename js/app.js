@@ -134,12 +134,12 @@ function initDemo() {
   // Set properties
   const cameraPositionLocation = gl.getUniformLocation(program, 'cameraPosition');
   const sphereCenterLocation = gl.getUniformLocation(program, 'sphereCenter');
-  const cubeCornerLocation = gl.getUniformLocation(program, 'cubeCorner');
+  const cubeCenterLocation = gl.getUniformLocation(program, 'cubeCenter');
   const floorRadiusLocation = gl.getUniformLocation(program, 'floorRadius');
   const floorHeightLocation = gl.getUniformLocation(program, 'floorHeight');
 
   gl.uniform3f(sphereCenterLocation, 3.0, 0.0, 0.0);
-  gl.uniform3f(cubeCornerLocation, -1.0, 0.0, 0.0);
+  gl.uniform3f(cubeCenterLocation, -1.0, 0.0, 0.0);
   gl.uniform1f(floorRadiusLocation, 10.0);
   gl.uniform1f(floorHeightLocation, -1.0);
 
