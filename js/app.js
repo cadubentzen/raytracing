@@ -138,8 +138,8 @@ function initDemo() {
   const floorRadiusLocation = gl.getUniformLocation(program, 'floorRadius');
   const floorHeightLocation = gl.getUniformLocation(program, 'floorHeight');
 
-  gl.uniform3f(sphereCenterLocation, 3.0, 0.0, 0.0);
-  gl.uniform3f(cubeCenterLocation, -1.0, 0.0, 0.0);
+  gl.uniform3f(sphereCenterLocation, 3.0, 0.0, 1.0);
+  gl.uniform3f(cubeCenterLocation, 0.5, 0.0, 0.0);
   gl.uniform1f(floorRadiusLocation, 10.0);
   gl.uniform1f(floorHeightLocation, -1.0);
 
