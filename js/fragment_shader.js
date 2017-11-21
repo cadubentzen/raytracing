@@ -32,7 +32,7 @@ bool intersectSphere(vec3 origin, vec3 rayDirection, out vec3 intersection,
                      out vec3 V, out vec3 N, out vec3 L) {
   vec3 rayToSphere = sphereCenter - origin;
   float b = dot(rayDirection, -rayToSphere);
-  float d = (b * b) - dot(rayToSphere, rayToSphere) + 1.0;
+  float d = (b * b) - dot(rayToSphere, rayToSphere) + 2.5 * 2.5;
 
   if (d < 0.0) return false;
 
@@ -49,13 +49,19 @@ bool intersectSphere(vec3 origin, vec3 rayDirection, out vec3 intersection,
 
 bool intersectFloor(vec3 origin, vec3 rayDirection, out vec3 intersection,
                     out float dist,
-                    out vec3 V, out vec3 N, out vec3 L) {
+                    out vec3 V, out vec3 N, out vec3 L,
+                    out vec3 color) {
   dist = (floorHeight - origin.y) / rayDirection.y;
   if (dist < 0.0) return false;
 
   float x = origin.x + rayDirection.x * dist;
   float z = origin.z + rayDirection.z * dist;
   if (x*x + z*z > floorRadius*floorRadius) return false;
+
+  if (x < 0.0 && z < 0.0) color = vec3(1.0, 1.0, 0.0);
+  else if (x < 0.0 && z > 0.0) color = vec3(1.0, 0.0, 1.0);
+  else if (x > 0.0 && z < 0.0) color = vec3(0.0, 0.5, 0.5);
+  else if (x > 0.0 && z > 0.0) color = vec3(0.5, 0.5, 0.5);
 
   intersection = vec3(x, floorHeight, z);
   V = -rayDirection;
@@ -180,8 +186,8 @@ bool intersectSomething(vec3 origin, vec3 rayDirection, out vec3 intersection,
     }
   } else if (intersectCube(origin, rayDirection, intersection, dist1, V, N, L)) {
     reflectedColor = vec3(0.0, 1.0, 0.0);
-  } else if (intersectFloor(origin, rayDirection, intersection, dist1, V, N, L)) {
-    reflectedColor = vec3(0.0, 0.0, 0.0);
+  } else if (intersectFloor(origin, rayDirection, intersection, dist1, V, N, L, reflectedColor)) {
+    // moved as parameter
   } else {
     return false;
   } 
@@ -210,12 +216,12 @@ bool intersectSomethingGoingToLight(vec3 origin, vec3 N_aux) {
 }
 
 void main() {
-  lightPosition = vec3(10.0, 10.0, 10.0);
+  lightPosition = vec3(0.0, 20.0, 0.0);
   vec3 rayDirection = normalize(nearPosition - cameraPosition);
 
   vec3 intersection1, intersection2;
 
-  cs = 2.0;
+  cs = 5.0;
 
   ka = 0.5; 
   kd = 0.4;
