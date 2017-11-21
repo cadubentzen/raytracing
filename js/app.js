@@ -138,14 +138,14 @@ function initDemo() {
   const floorRadiusLocation = gl.getUniformLocation(program, 'floorRadius');
   const floorHeightLocation = gl.getUniformLocation(program, 'floorHeight');
 
-  gl.uniform3f(sphereCenterLocation, 3.0, 0.0, 1.0);
-  gl.uniform3f(cubeCenterLocation, 0.5, 0.0, 0.0);
-  gl.uniform1f(floorRadiusLocation, 10.0);
+  gl.uniform3f(sphereCenterLocation, 0.0, 2.5, -5.0);
+  gl.uniform3f(cubeCenterLocation, 0.0, 2.5, 5.0);
+  gl.uniform1f(floorRadiusLocation, 20.0);
   gl.uniform1f(floorHeightLocation, -1.0);
 
   const up = vec3.fromValues(0.0, 1.0, 0.0);
   const cameraTo = vec3.fromValues(0.0, 0.0, 0.0);
-  const cameraInitialPosition = vec3.fromValues(5.0, 0.0, 5.0);
+  const cameraInitialPosition = vec3.fromValues(10.0, 2.0, 10.0);
   const cameraPosition = new Float32Array(3);
 
   const cameraDirection = new Float32Array(3);
