@@ -164,6 +164,24 @@ vec3 colorAt(vec3 color, vec3 V, vec3 N, vec3 L, vec3 R) {
   return rColor;
 }
 
+bool intersectSomethingGoingToLight(vec3 origin, vec3 N_aux) {
+  float distToLight = length(lightPosition - origin);
+  vec3 rayDirection = normalize(lightPosition - origin);
+
+  if (dot(N_aux, rayDirection) < 0.0) return false;
+
+  vec3 intersection;
+  float dist;
+  vec3 V, N, L;
+
+  if (intersectSphere(origin, rayDirection, intersection, dist, V, N, L)
+      || intersectCube(origin, rayDirection, intersection, dist, V, N, L)){
+    if (dist < distToLight) return true;
+  }
+
+  return false;
+}
+
 bool intersectSomething(vec3 origin, vec3 rayDirection, out vec3 intersection,
                         out vec3 N, out vec3 color, out vec3 reflectedColor) {
   float dist1, dist2;
@@ -190,29 +208,15 @@ bool intersectSomething(vec3 origin, vec3 rayDirection, out vec3 intersection,
     // moved as parameter
   } else {
     return false;
-  } 
+  }
+
+  if (intersectSomethingGoingToLight(intersection, N)) {
+    reflectedColor = vec3(0.0, 0.0, 0.0);
+  }
 
   R = reflect(L, N);
   color = colorAt(reflectedColor, V, N, L, R);
   return true;
-}
-
-bool intersectSomethingGoingToLight(vec3 origin, vec3 N_aux) {
-  float distToLight = length(lightPosition - origin);
-  vec3 rayDirection = normalize(lightPosition - origin);
-
-  if (dot(N_aux, rayDirection) < 0.0) return false;
-
-  vec3 intersection;
-  float dist;
-  vec3 V, N, L;
-
-  if (intersectSphere(origin, rayDirection, intersection, dist, V, N, L)
-      || intersectCube(origin, rayDirection, intersection, dist, V, N, L)){
-    if (dist < distToLight) return true;
-  }
-
-  return false;
 }
 
 void main() {
@@ -243,14 +247,15 @@ void main() {
   vec3 N;
 
   if (intersectSomething(cameraPosition, rayDirection, intersection1, N, color, reflectedColor)) {
-    if (intersectSomethingGoingToLight(intersection1, N)) {
-      gl_FragColor = vec4(0.1, 0.1, 0.1, 1.0);
-      return;
-    }
     colorMax = (reflectedColor + vec3(0.7))/1.7;
     rayDirection = reflect(rayDirection, N);
     if (intersectSomething(intersection1, rayDirection, intersection2, N, tempColor, reflectedColor)) {
       color += tempColor * colorMax;
+      colorMax = (reflectedColor + vec3(0.7))/1.7;
+      rayDirection = reflect(rayDirection, N);
+      if (intersectSomething(intersection2, rayDirection, intersection1, N, tempColor, reflectedColor)) {
+        color += tempColor * colorMax;  
+      }
     }
     gl_FragColor = vec4(color, 1.0); 
   } else {
