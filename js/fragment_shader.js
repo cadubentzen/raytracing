@@ -183,7 +183,8 @@ bool intersectSomethingGoingToLight(vec3 origin, vec3 N_aux) {
 }
 
 bool intersectSomething(vec3 origin, vec3 rayDirection, out vec3 intersection,
-                        out vec3 N, out vec3 color, out vec3 reflectedColor) {
+                        out vec3 N, out vec3 color, out vec3 reflectedColor,
+                        out bool shadow) {
   float dist1, dist2;
   vec3 V, L, R;
   vec3 V2, N2, L2;
@@ -212,8 +213,12 @@ bool intersectSomething(vec3 origin, vec3 rayDirection, out vec3 intersection,
 
   if (intersectSomethingGoingToLight(intersection, N)) {
     reflectedColor = vec3(0.0, 0.0, 0.0);
+    color = reflectedColor;
+    shadow = true;
+    return true;
   }
 
+  shadow = false;
   R = reflect(L, N);
   color = colorAt(reflectedColor, V, N, L, R);
   return true;
@@ -245,15 +250,16 @@ void main() {
   
   vec3 color, tempColor, colorMax, reflectedColor;
   vec3 N;
+  bool shadow = false;
 
-  if (intersectSomething(cameraPosition, rayDirection, intersection1, N, color, reflectedColor)) {
+  if (intersectSomething(cameraPosition, rayDirection, intersection1, N, color, reflectedColor, shadow)) {
     colorMax = (reflectedColor + vec3(0.7))/1.7;
     rayDirection = reflect(rayDirection, N);
-    if (intersectSomething(intersection1, rayDirection, intersection2, N, tempColor, reflectedColor)) {
+    if (!shadow && intersectSomething(intersection1, rayDirection, intersection2, N, tempColor, reflectedColor, shadow)) {
       color += tempColor * colorMax;
       colorMax = (reflectedColor + vec3(0.7))/1.7;
       rayDirection = reflect(rayDirection, N);
-      if (intersectSomething(intersection2, rayDirection, intersection1, N, tempColor, reflectedColor)) {
+      if (!shadow && intersectSomething(intersection2, rayDirection, intersection1, N, tempColor, reflectedColor, shadow)) {
         color += tempColor * colorMax;  
       }
     }
