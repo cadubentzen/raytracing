@@ -160,6 +160,9 @@ function initDemo() {
 
   let ratio = canvas.width / canvas.height;
 
+  const fpsValueElem = document.getElementById('fps_value');
+  let fps = 0;
+
   function renderLoop() {
     // resize canvas in case window size has changed
     if (canvas.width !== window.innerWidth
@@ -221,8 +224,14 @@ function initDemo() {
     gl.bufferData(gl.ARRAY_BUFFER, corners, gl.STATIC_DRAW);
     gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
 
+    fps += 1;
+
     requestAnimationFrame(renderLoop);
   }
 
   requestAnimationFrame(renderLoop);
+  setInterval(() => {
+    fpsValueElem.innerText = fps;
+    fps = 0;
+  }, 1000);
 }

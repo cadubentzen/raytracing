@@ -3,9 +3,22 @@
   <head>
     <meta charset="utf-8"/>
     <title>Ray tracing in WebGL</title>
+    <style>
+      div#fps {
+        font-family: 'Courier New', Courier, monospace;
+        font-size: 20px;
+        position: absolute;
+        top: 5px;
+        left: 5px;
+        color: white;
+      }
+    </style>
   </head>
   <body onload="initDemo()" style="margin: 0">
     <canvas id="c"></canvas>
+    <div id="fps">
+      <span id="fps_value">0</span> fps
+    </div>
 
     <script src="js/gl-matrix.js"></script>
 
